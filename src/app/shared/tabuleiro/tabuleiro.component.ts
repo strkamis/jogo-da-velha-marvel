@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { JogoDaVelhaService } from './services/jogo-da-velha.service';
+import { JogoDaVelhaService } from '../services/jogo-da-velha.service';
 
 @Component({
   selector: 'app-tabuleiro',
@@ -26,9 +26,9 @@ export class TabuleiroComponent implements OnInit {
     return this.jogoDaVelhaService.showFinal
   }
 
-  iniciarJogo(): void {
-    this.jogoDaVelhaService.iniciarJogo()
-  }
+  // iniciarJogo(): void {
+  //   this.jogoDaVelhaService.iniciarJogo()
+  // }
 
   jogar(posX: number, posY: number): void {
     this.jogoDaVelhaService.jogar(posX, posY)

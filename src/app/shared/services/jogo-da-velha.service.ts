@@ -4,28 +4,28 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class JogoDaVelhaService {
-  // Constants
   private readonly TAM_TAB: number = 3;
   private readonly X: number = 1;
   private readonly O: number = 2;
   private readonly VAZIO: number = 0;
 
-  // Game state variables
-  private tabuleiro: number[][];
+  private tabuleiro: any;
   private numMovimentos: number;
-  private vitoria: boolean | number[][];
+  private vitoria: any;
 
-  // Player and display variables
   private _jogador: number;
   private _showInicio: boolean;
   private _showTabuleiro: boolean;
   private _showFinal: boolean;
 
-  constructor() {
-    this.inicializar();
-  }
+  constructor() {}
 
-  // Game initialization methods
+  /**
+   * Inicializa o jogo e define a exebição da tela inicial
+   *
+   * @return void
+   */
+
   inicializar(): void {
     this._showInicio = true;
     this._showTabuleiro = false;
@@ -36,75 +36,118 @@ export class JogoDaVelhaService {
     this.inicializarTabuleiro();
   }
 
+  /**
+   * Inicializa o tabuleiro do jogo com vazio para todas
+   * as posições
+   *
+   * @return void
+   */
+
   inicializarTabuleiro(): void {
-    this.tabuleiro = [];
+    this.tabuleiro = [this.TAM_TAB];
     for (let i = 0; i < this.TAM_TAB; i++) {
       this.tabuleiro[i] = [this.VAZIO, this.VAZIO, this.VAZIO];
     }
   }
 
-  // Getters for game state properties
+  /**
+   * Retorna se a tela de ínicio deve ser exibida
+   *
+   * @return boolean
+   */
+
   get showInicio(): boolean {
     return this._showInicio;
   }
+
+  /**
+   * Retorna se o tabuleiro deve ser exibido.
+   *
+   * @return boolean
+   */
 
   get showTabuleiro(): boolean {
     return this._showTabuleiro;
   }
 
+  /**
+   * Retorna se a tela de fim de jogo deve ser exibida
+   *
+   * @return boolean
+   */
+
   get showFinal(): boolean {
     return this._showFinal;
   }
 
+  /**
+   * Retorna a vez do jogador a ser jogada.
+   *
+   * @return number
+   */
   get jogador(): number {
     return this._jogador;
   }
 
-  // Game start method
+  /**
+   * Exibe o tabuleiro
+   *
+   * @return void
+   */
+
   iniciarJogo(): void {
     this._showInicio = false;
     this._showTabuleiro = true;
   }
 
-  // Game move method
+  /**
+   * Realiza uma jogada dado as coordenadas do tabuleiro
+   *
+   * @param number posX
+   * @param number posY
+   * @return void
+   */
+
   jogar(posX: number, posY: number): void {
-    // Check for invalid move
+    //jogada inválida
     if (this.tabuleiro[posX][posY] !== this.VAZIO || this.vitoria) {
       return;
     }
 
-    // Place the current player's mark
-    this.tabuleiro[posX][posY] = this._jogador;
+    this.tabuleiro[posX][posY] = this.jogador;
     this.numMovimentos++;
-
-    // Check for victory and switch players
     this.vitoria = this.fimJogo(posX, posY, this.tabuleiro, this._jogador);
     this._jogador = this._jogador === this.X ? this.O : this.X;
 
-    // Check for draw or proceed with CPU turn
     if (!this.vitoria && this.numMovimentos < 9) {
       this.cpuJogar();
     }
 
-    // Handle game end scenarios
+    //houve vitória
     if (this.vitoria !== false) {
       this._showFinal = true;
-    } else if (!this.vitoria && this.numMovimentos === 9) {
-      this._jogador = 0; // No winner, set player to 0
+    }
+
+    //empate
+    if (!this.vitoria && this.numMovimentos === 9) {
+      this._jogador = 0;
       this._showFinal = true;
     }
   }
 
-  // Check for victory conditions
-  fimJogo(
-    linha: number,
-    coluna: number,
-    tabuleiro: number[][],
-    jogador: number
-  ): boolean | number[][] {
-    let fim: boolean | number[][] = false;
+  /**
+   * Verefica e retorna se o jogo terminou
+   *
+   * @param number linha
+   * @param number coluna
+   * @param any tabuleiro
+   * @param number jogador
+   * @return array
+   */
+  fimJogo(linha: number, coluna: number, tabuleiro: any, jogador: number) {
+    let fim: any = false;
 
-    // Check rows
+    //valida a linha
     if (
       tabuleiro[linha][0] === jogador &&
       tabuleiro[linha][1] === jogador &&
@@ -117,7 +160,7 @@ export class JogoDaVelhaService {
       ];
     }
 
-    // Check columns
+    //valida a coluna
     if (
       tabuleiro[0][coluna] === jogador &&
       tabuleiro[1][coluna] === jogador &&
@@ -130,11 +173,22 @@ export class JogoDaVelhaService {
       ];
     }
 
-    // Check diagonals
+    //valida as diagonais
     if (
       tabuleiro[0][0] === jogador &&
       tabuleiro[1][1] === jogador &&
       tabuleiro[2][2] === jogador
+    ) {
+      fim = [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ];
+    }
+    if (
+      tabuleiro[0][2] === jogador &&
+      tabuleiro[1][1] === jogador &&
+      tabuleiro[2][0] === jogador
     ) {
       fim = [
         [0, 2],
@@ -146,19 +200,23 @@ export class JogoDaVelhaService {
     return fim;
   }
 
-  // CPU move logic
+  /**
+   * Lógica para simular jogada do computador em modo aleatório
+   *
+   * @return void
+   */
   cpuJogar(): void {
-    // Check for winning move
+    //verifica jogada de vitória
     let jogada: number[] = this.obterJogada(this.O);
 
     if (jogada.length <= 0) {
-      // Try to block opponent's winning move
+      // tenta jogar para evitar derrota
       jogada = this.obterJogada(this.X);
     }
 
     if (jogada.length <= 0) {
-      // Random move if no winning or blocking move is available
-      let jogadas: number[][] = [];
+      //jogada aleatório
+      let jogadas: any = [];
       for (let i = 0; i < this.TAM_TAB; i++) {
         for (let j = 0; j < this.TAM_TAB; j++) {
           if (this.tabuleiro[i][j] === this.VAZIO) {
@@ -167,9 +225,8 @@ export class JogoDaVelhaService {
         }
       }
       let k = Math.floor(Math.random() * (jogadas.length - 1));
-      jogada = jogadas[k];
+      jogada = [jogadas[k][0], jogadas[k][1]];
     }
-
     this.tabuleiro[jogada[0]][jogada[1]] = this._jogador;
     this.numMovimentos++;
     this.vitoria = this.fimJogo(
@@ -181,7 +238,12 @@ export class JogoDaVelhaService {
     this._jogador = this._jogador === this.X ? this.O : this.X;
   }
 
-  // Check for possible winning moves for the specified player
+  /**
+   * Obtém uma jogada válida para vitória de um jogador
+   *
+   * @param number jogador
+   * @return number[]
+   */
   obterJogada(jogador: number): number[] {
     let tab = this.tabuleiro;
     for (let lin = 0; lin < this.TAM_TAB; lin++) {
@@ -199,34 +261,60 @@ export class JogoDaVelhaService {
     return [];
   }
 
-  // Check if X should be displayed for the given coordinates
+  /**
+   * Retorna se a peça X deve ser exebida para a
+   * coordenada informada
+   *
+   * @param number posX
+   * @param number posY
+   * @return boolean
+   */
   exibirX(posX: number, posY: number): boolean {
     return this.tabuleiro[posX][posY] === this.X;
   }
 
-  // Check if O should be displayed for the given coordinates
+  /**
+   * Retorna se a peça O deve ser exibida para a
+   * coordenada informada
+   *
+   * @param number posX
+   * @param number posY
+   * @return boolean
+   */
   exibirO(posX: number, posY: number): boolean {
     return this.tabuleiro[posX][posY] === this.O;
   }
 
-  // Check if victory highlight should be displayed for the given coordinates
-exibirVitoria(posX: number, posY: number): boolean {
-  let exibirVitoria: boolean = false;
+  /**Retorna se a marcação de vitória deve ser exibida
+   * para a coordenada infomada
+   *
+   * @param number posX
+   * @param number posY
+   * @return boolean
+   */
+  exibirVitoria(posX: number, posY: number): boolean {
+    let exibirVitoria: boolean = false;
 
-  // Ensure vitoria is an array before iterating
-  if (Array.isArray(this.vitoria)) {
+    if (!this.vitoria) {
+      return exibirVitoria;
+    }
+
     for (let pos of this.vitoria) {
       if (pos[0] === posX && pos[1] === posY) {
         exibirVitoria = true;
         break;
       }
     }
+
+    return exibirVitoria;
   }
 
-  return exibirVitoria;
-}
+  /** Inicializa um jogo, assim como exibe o
+   * tabuleiro
+   *
+   * @return void
+   */
 
-  // Start a new game and show the board
   novoJogo(): void {
     this.inicializar();
     this._showFinal = false;
