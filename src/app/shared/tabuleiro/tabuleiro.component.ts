@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { JogoDaVelhaService } from '../services/jogo-da-velha.service';
+import { JogoDaVelhaService } from '../services/jogo-da-velha/jogo-da-velha.service';
 
 @Component({
   selector: 'app-tabuleiro',

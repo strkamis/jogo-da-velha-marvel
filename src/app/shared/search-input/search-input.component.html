@@ -1,0 +1,6 @@
+<!-- <input type="search" [(ngModel)]="searchTerm" (ngModelChange)="onSearchTermChange()" [placeholder]="placeholder"> -->
+<div>
+
+  <input type="text" [value]="searchTerm" (input)="onInput($event)" [placeholder]="placeholder" #input>
+
+</div>

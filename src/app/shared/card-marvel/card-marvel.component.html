@@ -1,0 +1,10 @@
+<div class="flip-card">
+  <div class="flip-card-inner" *ngFor="let heros of allCharacters | async">
+    <div class="flip-card-front">
+      <img src="{{ heros.thumbnail?.path + '.' + heros.thumbnail?.extension }}" alt="Avatar" style="width:300px;height:300px;">
+    </div>
+    <div class="flip-card-back">
+      <h1>{{ heros.name }}</h1>
+    </div>
+  </div>
+</div>

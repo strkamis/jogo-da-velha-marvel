@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { JogoDaVelhaService } from '../services/jogo-da-velha.service';
+import { JogoDaVelhaService } from '../services/jogo-da-velha/jogo-da-velha.service';
+import { Character } from 'src/app/shared/interface/character.interface';
 
 @Component({
   selector: 'app-tela-inicial',
@@ -7,6 +8,9 @@ import { JogoDaVelhaService } from '../services/jogo-da-velha.service';
   styleUrls: ['./tela-inicial.component.scss']
 })
 export class TelaInicialComponent implements OnInit {
+  characters: Character[] = [];
+  searchTerm: string = '';
+
 
   constructor(private jogoDaVelhaService: JogoDaVelhaService) { }
 
@@ -21,4 +25,6 @@ export class TelaInicialComponent implements OnInit {
   iniciarJogo(): void {
     this.jogoDaVelhaService.iniciarJogo()
   }
+
+
 }
